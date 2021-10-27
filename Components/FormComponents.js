@@ -120,7 +120,8 @@ const MyTextInput = ({ label, ...props }) => {
                 })
             }
             onSubmit={async (values, { setSubmitting }) => {
-                const ApplicantRef = await addDoc(collection(db,'applicants'),
+                try{
+                    const ApplicantRef = await addDoc(collection(db,'applicants'),
                 values
                 )
                 if(ApplicantRef.id){
@@ -129,6 +130,10 @@ const MyTextInput = ({ label, ...props }) => {
                     )
                     
                 }
+                }catch(err){
+                    console.log(error)
+                }
+                
               }}
             >
         <Form>

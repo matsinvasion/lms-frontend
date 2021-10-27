@@ -4,6 +4,8 @@ import { Formik, Form, useField } from 'formik';
 import {collection,addDoc, doc, setDoc } from "firebase/firestore"; 
 import {db} from '../firebase/clientApp.js';
 import {Timestamp} from 'firebase/firestore'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 import * as Yup from 'yup';
 import {Flex,
@@ -75,6 +77,7 @@ const MyTextInput = ({ label, ...props }) => {
   export const Apply = ()=>{
       /** regex for phone number validation */
       const regex = /^\+(?:[0-9]●?){6,14}[0-9]$/;
+      const router = useRouter()
       return (
           <>
         <Flex direction="column" pl={6} mt={6} rounded={6}>
@@ -122,23 +125,7 @@ const MyTextInput = ({ label, ...props }) => {
                 )
                 if(ApplicantRef.id){
                     return (
-                        <Alert
-                        status="success"
-                        variant="subtle"
-                        flexDirection="column"
-                        alignItems="center"
-                        justifyContent="center"
-                        textAlign="center"
-                        height="200px"
-                        >
-                        <AlertIcon boxSize="40px" mr={0} />
-                        <AlertTitle mt={4} mb={1} fontSize="lg">
-                            Application submitted!
-                        </AlertTitle>
-                        <AlertDescription maxWidth="sm">
-                            Thanks for submitting your application. Our team will get back to you soon.
-                        </AlertDescription>
-                    </Alert>
+                        router.push('/applicationSuccess')
                     )
                     
                 }

@@ -126,7 +126,7 @@ const MyTextInput = ({ label, ...props }) => {
                 )
                 if(ApplicantRef.id){
                     return (
-                        router.push('/applicationSuccess')
+                        router.push(`/application/successful/${ApplicantRef.id}`)
                     )
                     
                 }

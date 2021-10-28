@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Formik, Form, useField } from 'formik';
-import {collection,addDoc, doc, setDoc } from "firebase/firestore"; 
+import {Timestamp,collection,addDoc, doc, setDoc,updateDoc, increment } from "firebase/firestore"; 
 import {db} from '../firebase/clientApp.js';
-import {Timestamp} from 'firebase/firestore'
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
@@ -125,6 +125,12 @@ const MyTextInput = ({ label, ...props }) => {
                 values
                 )
                 if(ApplicantRef.id){
+                    //update counters/applicants/count
+                    //use transactions
+                    const ApplicantCountRef = doc(db,'counters','applicants');
+                    await updateDoc(ApplicantCountRef,{
+                        count:increment(1)
+                    })
                     return (
                         router.push(`/application/successful/${ApplicantRef.id}`)
                     )

@@ -24,7 +24,6 @@ export default function Home() {
       h='100vh'
       w='30%'
       flexDir="column"
-      
       >
         <Box maxW="32rem">
         <Heading
@@ -40,7 +39,7 @@ export default function Home() {
         fontSize="xl"
         pl={6}
         >
-  Learn a new language Today!
+      Learn a new language Today!
   </Text>
         </Box>
         <Apply/>

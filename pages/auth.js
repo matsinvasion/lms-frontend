@@ -58,7 +58,7 @@ export default function auth() {
                     
                 }
                 catch (err){
-                    console.log(error)
+                    console.log(err)
 
                 }
                

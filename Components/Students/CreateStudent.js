@@ -2,7 +2,7 @@ import React from 'react';
 import {db} from '../../firebase/clientApp.js'
 import { doc, setDoc } from "firebase/firestore"; 
 
-
+const url='http://localhost:3000/sendmail'
 const generatePassword = ()=>{
     let password = "";
     let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -16,19 +16,32 @@ const generatePassword = ()=>{
 }
 
 export default function CreateStudent(applicantObject,isAdmin) {
-    //make user. Admin can create user
-    //make student
-    //emaill with login credentials
+    
     console.log(isAdmin)
     let studentEmail = applicantObject.emailAddress;
     let password = generatePassword();
 
     //decode token
     if(isAdmin){
-        //create user
-        console.log('creating user')
+    //emaill signup link for admitted applicants
+    try{
+        fetch(url,{
+            method:'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:JSON.stringify({email:studentEmail})
+        }).then((res)=>{
+            return res.json()
+        }).then(result =>{
+            console.log('student notified via email')
+        }).catch(err =>{console.log(err.message)})
+
+    }catch(err){
+        console.log(err.message)
+    }
+        console.log('add to student collection')
+    //so how do we much up user created and student collection?
     }else{
-        console.log('no user')
+        console.log('not admin')
     }
 
     return (

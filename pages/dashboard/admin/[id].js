@@ -1,4 +1,4 @@
-import React,{useEffect} from 'react';
+import React,{useState,useEffect} from 'react';
 import {useRouter} from 'next/router'
 import { useAuthHook } from '../../../context/AuthUserContext';
 
@@ -11,20 +11,36 @@ import {
     Spacer,
     Box
 
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
+
+import {db} from '../../../firebase/clientApp';
+import { doc, getDoc } from "firebase/firestore";
 
 export default function dashboard() {
     const router = useRouter()
     const { id } = router.query
-    console.log(id)
    const {user,loading}=useAuthHook()
-   console.log(user)
+   const [count,setCount]=useState('')
+
+   
    // Listen for changes on loading and authUser, redirect if needed
-   useEffect(() => {
+   useEffect(async () => {
+    const applicantsCountRef = doc(db,"counters","applicants")
+    const docSnap = await getDoc(applicantsCountRef)
+    if(docSnap.exists()){
+        setCount(docSnap.data().count)
+    }
     if (!loading && !user)
       console.log('user loged out')
   }, [user, loading])
+  //read counters/applicants/count
+ 
+  
+  console.log(count)
+  
+  
     return (
+        <>
         <Flex
         h={[null, null, "100vh"]}
         maxW="2000px"
@@ -140,7 +156,7 @@ export default function dashboard() {
              p="3"
             mt={24}
             flexDir="column">
-                <Text>50</Text>
+                <Text>Overall: {count}</Text>
 
             </Flex>
 
@@ -182,5 +198,6 @@ export default function dashboard() {
                
            
         </Flex>
+        </>
     )
 }

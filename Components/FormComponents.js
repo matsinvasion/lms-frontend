@@ -1,8 +1,11 @@
 import React from 'react';
+import {app as Auth} from "../firebase/clientApp.js"
 import ReactDOM from 'react-dom';
 import { Formik, Form, useField } from 'formik';
 import {Timestamp,collection,addDoc, doc, setDoc,updateDoc, increment } from "firebase/firestore"; 
 import {db} from '../firebase/clientApp.js';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore"; 
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -71,6 +74,81 @@ const MyTextInput = ({ label, ...props }) => {
     );
   };
 
+  /* signup form */
+  export const SignUp =()=>{
+    const router = useRouter();
+      return(
+         <Flex direction="column" height="100vh" alignItems="center" justifyContent="center">
+             <Heading fontSize="xl" mb={6}>Conguratulations on your addmission.  Please SignUp</Heading>
+             <Formik
+             initialValues={{
+                 email:'',
+                 password:'',
+             }}
+             validationSchema={
+                 Yup.object({
+                    email:Yup.string()
+                    .email('Invalid Email address')
+                    .required('Required'),
+
+                    password:Yup.string()
+                    .required('PassWord is required')
+                    .min(8, 'Password should be 8 characters')
+                 })  
+             }
+
+             onSubmit={async (values,{ setSubmitting })=>{
+                 //create user user, js client sdk
+                 const Auth = getAuth();
+                
+                try{
+                        createUserWithEmailAndPassword(Auth,values.email,values.password)
+                        .then((userCredential)=>{
+                            const user = userCredential.user;
+                            //Add to student collection
+                            
+                            //redirect to signin page
+                            router.push('/auth')
+                        })
+                        .catch((err)=>{
+                            console.log(err.message)
+                        })
+                }catch(err){
+                    
+                    console.log(error)
+                }
+            }
+
+            }
+             >
+                 <Form>
+                     <Flex direction="column" background="gray.100" p={12} rounded={6}>
+                     <MyTextInput
+                    w='100%'
+                    variant="outline" 
+                   
+                    label="Email"
+                    name="email"
+                    type="text"
+                    placeholder="e.g Janenyambi@abc.com"
+                />
+                <MyTextInput
+                    w='100%'
+                    variant="outline" 
+                   
+                    label="Password"
+                    name="password"
+                    type="password"
+                    placeholder="password in 8 characters"
+                />
+                 <Button w='40%' type="submit" colorScheme="teal">Sign Up</Button>
+                     </Flex>
+                 </Form>
+
+             </Formik>
+         </Flex>
+      )
+  }
    
   /** Application form */
 

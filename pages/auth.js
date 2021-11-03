@@ -43,10 +43,13 @@ export default function auth() {
                     then(result => {
                         if(result.admin){
                             router.push(`/dashboard/admin/${result.uid}`);
-                        }else if(result.teacher){
+                        }else if(result.role == 'teacher'){
                             router.push(`/dashboard/teacher/${result.uid}`)
-                        }else if(result.student){
-                            router.push(`/dashboard/student/${result.uid}`)
+                        }else if(result.role =='student'){
+                            router.push(`/dashboard/students/${result.uid}`)
+                        }else if(result.role){
+                            console.log(result.uid)
+                            console.log('nara')
                         }
                       })
                     .catch((err)=>{

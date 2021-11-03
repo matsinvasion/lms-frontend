@@ -2,10 +2,10 @@ import React from 'react';
 import {app as Auth} from "../firebase/clientApp.js"
 import ReactDOM from 'react-dom';
 import { Formik, Form, useField } from 'formik';
-import {Timestamp,collection,addDoc, doc, setDoc,updateDoc, increment } from "firebase/firestore"; 
+import {Timestamp,addDoc, doc, setDoc,updateDoc, increment,collection, query, where, getDocs } from "firebase/firestore"; 
 import {db} from '../firebase/clientApp.js';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"; 
+
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -77,6 +77,8 @@ const MyTextInput = ({ label, ...props }) => {
   /* signup form */
   export const SignUp =()=>{
     const router = useRouter();
+    const url = 'http://localhost:3000/setclaims'
+    
       return(
          <Flex direction="column" height="100vh" alignItems="center" justifyContent="center">
              <Heading fontSize="xl" mb={6}>Conguratulations on your addmission.  Please SignUp</Heading>
@@ -97,24 +99,43 @@ const MyTextInput = ({ label, ...props }) => {
                  })  
              }
 
-             onSubmit={async (values,{ setSubmitting })=>{
+             onSubmit={ (values,{ setSubmitting })=>{
                  //create user user, js client sdk
                  const Auth = getAuth();
                 
                 try{
+                        const studentRef = doc(db,'students', values.email)
                         createUserWithEmailAndPassword(Auth,values.email,values.password)
                         .then((userCredential)=>{
                             const user = userCredential.user;
-                            //Add to student collection
-                            
+                            //setCustomClaims via admin sdk
+                            fetch(url,{
+                                method:'POST',
+                                headers:{
+                                    'Content-Type': 'application/json'
+                                },
+                                body:JSON.stringify({uid:user.uid,role:'student'})
+                            }).then((res)=>{res.json()})
+                            .then((result)=>{
+                                console.log('student role is set')
+                                //update student collection
+                            })
+                            //Add userid field to student document
+                              updateDoc(studentRef,{
+                                userid:user.uid
+                            }).then(()=>{
+                                
                             //redirect to signin page
                             router.push('/auth')
+                            }).catch((err)=>{err.message})
+                            
+                            
+                            
                         })
                         .catch((err)=>{
                             console.log(err.message)
                         })
-                }catch(err){
-                    
+                }catch(err){                  
                     console.log(error)
                 }
             }

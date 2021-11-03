@@ -29,7 +29,6 @@ export default function dashboard() {
         maxW="2000px"
         flexDir={["column", "column", "row"]}
         overflow="hidden"
-       
         >
             {/** column 1 side nav */}
             <Flex

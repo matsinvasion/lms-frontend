@@ -1,6 +1,6 @@
 import React from 'react';
 import {db} from '../../firebase/clientApp.js'
-import { doc, setDoc } from "firebase/firestore"; 
+import { setDoc,doc,collection, addDoc } from "firebase/firestore"; 
 
 const url='http://localhost:3000/sendmail'
 const generatePassword = ()=>{
@@ -15,7 +15,7 @@ const generatePassword = ()=>{
     return password;
 }
 
-export default function CreateStudent(applicantObject,isAdmin) {
+export default async function CreateStudent(applicantObject,isAdmin) {
     
     console.log(isAdmin)
     let studentEmail = applicantObject.emailAddress;
@@ -23,8 +23,16 @@ export default function CreateStudent(applicantObject,isAdmin) {
 
     //decode token
     if(isAdmin){
+    
+
     //emaill signup link for admitted applicants
     try{
+        //grant applicant student role
+        await setDoc(doc(db,'students',studentEmail),{
+            email:studentEmail,
+            name:applicantObject.fullName,
+            classes:applicantObject.languagesOrSkillToLearn
+        })
         fetch(url,{
             method:'POST',
             headers: { 'Content-Type': 'application/json' },

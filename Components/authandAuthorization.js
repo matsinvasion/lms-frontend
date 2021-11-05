@@ -18,6 +18,7 @@ export const auth = getAuth();
         if (user) {
             const token = await user.getIdToken();
           setUser(user);
+          //set token as cookie, useful for authing in getServerSideProps
           nookies.set(undefined, 'token', token, { path: '/' });
           setLoading(false);
         } else {

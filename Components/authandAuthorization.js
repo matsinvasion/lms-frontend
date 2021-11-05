@@ -1,7 +1,7 @@
 import React,{ useState, useEffect } from 'react'
 import {app as Auth} from "../firebase/clientApp";
 import { getAuth} from "firebase/auth";
-
+import nookies from 'nookies';
 export const auth = getAuth();
 
 
@@ -14,9 +14,11 @@ export const auth = getAuth();
     
     useEffect(() => {
       setLoading(true)
-      auth.onAuthStateChanged(function handleAuth(user) {
+      auth.onAuthStateChanged(async function handleAuth(user) {
         if (user) {
+            const token = await user.getIdToken();
           setUser(user);
+          nookies.set(undefined, 'token', token, { path: '/' });
           setLoading(false);
         } else {
           setUser(null);

@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from 'react';
 import {useRouter} from 'next/router'
 import { useAuthHook } from '../../../context/AuthUserContext';
+import {SignOut} from '../../../Components/FormComponents.js'
 
 import {
     Flex,
@@ -107,7 +108,7 @@ export default function dashboard() {
                         
                         ICON
                         
-                        <Link _hover={{textDecor:'none'}}>
+                        <Link href={`/dashboard/admin/teachers/${id}`} _hover={{textDecor:'none'}}>
                         <Text>Teachers</Text>
                         </Link>
                     </Flex >
@@ -118,6 +119,7 @@ export default function dashboard() {
                 <Flex flexDir="column" alignItems="center" mb={10} mt={5}>
                     <Avatar my={2} src=""/>
                     <Text textAlign="center">Mark Musasizi</Text>
+                    <SignOut/>
                 </Flex>
 
             </Flex>
@@ -191,8 +193,8 @@ export default function dashboard() {
             </Flex>
             </Flex>
             
-            {/* column 3 left side nav, if needed */}
-            <Flex>
+            {/* column 2 left side nav, if needed */}
+            <Flex >
                 
             </Flex>
                

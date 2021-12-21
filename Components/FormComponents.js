@@ -1,14 +1,13 @@
 import React from 'react';
 import {app as Auth} from "../firebase/clientApp.js"
 import ReactDOM from 'react-dom';
-import { Formik, Form, useField } from 'formik';
+import { Formik, Form, useField,Field,FieldArray } from 'formik';
 import {Timestamp,addDoc, doc, setDoc,updateDoc, increment,collection, query, where, getDocs } from "firebase/firestore"; 
 import {db} from '../firebase/clientApp.js';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-
-
+import { getAuth, signOut,createUserWithEmailAndPassword } from "firebase/auth";
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import {createdQuiz} from '../Components/Students/stateUtil.js'
 
 import * as Yup from 'yup';
 import {Flex,
@@ -22,7 +21,18 @@ import {Flex,
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Radio,
+  RadioGroup,
+  Stack,
   Select} from '@chakra-ui/react'
+
+  import {
+    RecoilRoot,
+    atom,
+    selector,
+    useRecoilState,
+    useRecoilValue,
+  } from 'recoil';
   
 
 /**Re-usable form components */
@@ -170,6 +180,24 @@ const MyTextInput = ({ label, ...props }) => {
          </Flex>
       )
   }
+
+  /** signOut button */
+  export const SignOut =()=>{
+    const auth = getAuth();
+    const router = useRouter();
+    
+
+      return (
+        <Button onClick={()=>{
+            signOut(auth).then(() => {
+            router.push('/')
+          }).catch((error) => {
+            // An error happened.
+            console.log(error.message)
+          });}}>SignOut</Button>
+      )
+
+  }
    
   /** Application form */
 
@@ -301,3 +329,137 @@ const MyTextInput = ({ label, ...props }) => {
         </>
       );
   };
+
+  
+  export const CreateQuiz=()=>{
+      let option = 1;
+      const [assignments, setAssignments] = useRecoilState(createdQuiz)
+      const router = useRouter();
+      return (
+          <>
+          <Formik
+          initialValues={{
+              tag:'',
+              numberofquestions:0,
+              grade:0,
+              questions:[{
+                question:'',
+                weight:'',
+                answer:'',
+                options:[''],
+                active:''
+        }]
+          }}
+          onSubmit={async ({tag,numberofquestions,grade,questions,active}) =>{
+            
+            try{
+              const createquiz= await addDoc(collection(db, "quizes"),{
+                Tag:tag,
+                Numberofquestions:numberofquestions,
+                Grade:grade,
+                Questions:questions,
+                active:false
+              })
+              
+              if(createquiz.id){
+                setAssignments(assignments=>[...assignments,tag])
+                router.reload(window.location.pathname);
+              }
+
+            }catch(err){
+              console.log(err)
+            }
+              
+              
+            
+          }}
+          >
+              {({values})=>(
+                  <Form>
+                  <MyTextInput variant="outline" label="Tag" name="tag"/>
+                  <MyTextInput variant="outline" label ="Number of Questions" name="numberofquestions"/>
+                  <MyTextInput variant="outline" label="Quiz Grade" name="grade" />
+                  <FieldArray
+                  name="questions"
+                  render={arrayHelpers=>(
+                    <Flex direction="column">
+                        {values.questions && values.questions.length > 0 ? (
+                            
+                            values.questions.map((question,index)=>(
+                                
+                                <Flex direction="column" key={index}>
+                                    
+                                    <label> question
+                                    <MyTextInput variant="outline" label="Question" name={`questions.${index}.question`}/>
+                                    </label>
+                                    <label>grade
+                                    <MyTextInput variant="outline"name={`questions.${index}.weight`} label="Marks"/>
+                                    </label>
+                                    <label>answer
+                                    <MyTextInput variant="outline" label="answer" name={`questions.${index}.answer`}/>
+                                    </label>
+                                    <FieldArray
+                                    name={`questions.${index}.options`}
+                                    render={innerArrayHelpers=>(
+                                        <>
+                                        {question.options && question.options.length >0 ?(
+                                            question.options.map((option,OpIndex)=>(
+                                                <div key={OpIndex}>
+                                                <MyTextInput variant="outline" label="Option" name={`questions.${index}.options.${OpIndex}`}/>
+                                                <Button type="button" onClick={()=>innerArrayHelpers.push('')}> Add</Button>
+                                                <Button type="button"onClick={() => innerArrayHelpers.remove(OpIndex)}>
+                                                    -
+                                                </Button>
+                                                </div>
+                                            ))
+                                        ):(
+                                            <div>
+                                               <Button type="button" onClick={()=>innerArrayHelpers.push('')}> Add</Button>
+                                               
+                                            </div>
+                                            
+                                        )}
+                                        
+                                        
+                                        </>
+                                    )}
+                                    />
+                                    <MySelect label="Active" name="active" variant="outline" >
+                                    <option value=""></option>
+                                    <option value="Primary School">True</option>
+                                    <option value="High School">False</option>
+
+                                    </MySelect>
+                                    
+                    
+                
+                                    
+                                   
+                                    
+                                    
+                                    <Button type="submit"  size="sm">
+                                    submit
+                                    </Button>
+
+                                </Flex>
+                        ))
+                        ):(
+                            <Button size="md" type="button" onClick={() => arrayHelpers.push('')}>
+                              {/*  */}
+                              Add a question
+                            </Button>
+                          )}
+
+                    </Flex>
+                  )} />
+              </Form>
+
+              )}
+              
+          </Formik>
+          </>
+      )
+      
+  }
+
+ 

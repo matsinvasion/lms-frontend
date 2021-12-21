@@ -17,11 +17,13 @@ import {
 import {db} from '../../../firebase/clientApp';
 import { doc, getDoc } from "firebase/firestore";
 
+
 export default function dashboard() {
     const router = useRouter()
     const { id } = router.query
    const {user,loading}=useAuthHook()
    const [count,setCount]=useState('')
+clear
 
    
    // Listen for changes on loading and authUser, redirect if needed

@@ -41,15 +41,15 @@ export default function auth() {
                         return res.json()
                     }).
                     then(result => {
-                        if(result.admin){
+                        if(result.role=='admin'){
                             router.push(`/dashboard/admin/${result.uid}`);
                         }else if(result.role == 'teacher'){
                             router.push(`/dashboard/teacher/${result.uid}`)
                         }else if(result.role =='student'){
                             router.push(`/dashboard/students/${result.uid}`)
-                        }else if(result.role){
-                            console.log(result.uid)
-                            console.log('nara')
+                        }else if(!result.role){
+                            //Account not given roles
+                            //contact Adminstrator
                         }
                       })
                     .catch((err)=>{
